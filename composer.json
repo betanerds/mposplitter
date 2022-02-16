@@ -1,0 +1,26 @@
+{
+    "name": "betanerds/mposplitter",
+    "description": "Splits an MPO file and writes a stereograph image",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Betanerds\\Mposplitter\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "BaseTrend",
+            "email": "info@basetrend.nl"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.4|^8.0",
+        "symfony/console": "^5.0|^6.0",
+        "ext-gd": "*"
+    },
+    "bin": [
+        "bin/demo"
+    ]
+}

@@ -21,6 +21,6 @@
         "ext-gd": "*"
     },
     "bin": [
-        "bin/demo"
+        "bin/mposplitter"
     ]
 }

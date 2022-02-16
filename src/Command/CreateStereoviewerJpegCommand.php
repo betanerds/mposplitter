@@ -23,7 +23,7 @@ class CreateStereoviewerJpegCommand extends Command
         $this->addOption('focus', null, InputOption::VALUE_NEGATABLE, 'Show focus helpers on the stereo JPG', true);
         $this->addOption('focus-size', null, InputOption::VALUE_OPTIONAL, 'Size of the focus helpers on the stereo JPG', 50);
         $this->addOption('frames', null, InputOption::VALUE_NEGATABLE, 'Show frames on the stereo JPG', true);
-        $this->addOption('frame-size', null, InputOption::VALUE_OPTIONAL, 'Size of the focus helpers on the stereo JPG', 100);
+        $this->addOption('frame-size', null, InputOption::VALUE_OPTIONAL, 'Size of the frames around the stereo-pairs', 100);
         $this->addOption('output', null, InputOption::VALUE_OPTIONAL, 'The output filename');
     }
 

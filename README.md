@@ -26,6 +26,6 @@ Make sure the ```~/.composer/vendor/bin``` is in your ```PATH```
 
 ```--frames|--no-frames ```      Show frames on the stereo JPG
 
-```--frame-size[=FRAME-SIZE]```  Size of the focus helpers on the stereo JPG [default: 100]
+```--frame-size[=FRAME-SIZE]```  Size of the frames around the stereo-pairs [default: 100]
 
 ```--output[=OUTPUT]   ```       The output filename

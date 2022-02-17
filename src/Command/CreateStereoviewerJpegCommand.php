@@ -14,7 +14,7 @@ class CreateStereoviewerJpegCommand extends Command
     const RIGHT_IMAGE = 1;
 
     protected static $defaultName = 'convert';
-    protected static $defaultDescription = 'Convert a Fuji film Fine-pix Real 3D MPO file to a stereo JPG';
+    protected static $defaultDescription = 'Convert a Fujifilm Finepix Real 3D MPO file to a stereo JPG';
 
     protected function configure(): void
     {
@@ -31,6 +31,12 @@ class CreateStereoviewerJpegCommand extends Command
     {
         $filename = $input->getArgument('filename');
         $path_parts = pathinfo($filename);
+
+        if (!file_exists($filename)) {
+            $output->writeln('File not found');
+
+            return Command::FAILURE;
+        }
 
         $buffer = file_get_contents($filename);
 

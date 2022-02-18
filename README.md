@@ -22,10 +22,20 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 `--focus|--no-focus`         Show focus helpers on the stereo JPG [default: focus]
 
-`--focus-size[=FOCUS-SIZE]` Size of the focus helpers on the stereo JPG [default: 50]
+`--focus-size[=FOCUS-SIZE]`  Size of the focus helpers on the stereo JPG [default: 50]
 
-`--frames|--no-frames`      Show frames on the stereo JPG [default: frames]
+`--frames|--no-frames`       Show frames on the stereo JPG [default: frames]
 
 `--frame-size[=FRAME-SIZE]`  Size of the frames around the stereo-pairs [default: 100]
 
-`--output[=OUTPUT]`       The output filename [default: `<filename>`.jpg]
+`--text[=TEXT]`              Adds text under the right stereo-part
+
+`--font-size[=TEXT]`         The fontsize for the text [default: 48]
+
+`--font[=TEXT]`              The font to use (must be in the fonts folder) [default: "aAntiCorona.ttf"]
+
+`--output[=OUTPUT]`          The output filename [default: `<filename>-stereo`.jpg]
+
+
+# Disclaimer
+The font 'A Anti Corona' is a free font by ''Wahyu Eka Prasetya' and downloaded from 'www.1001freefonts.com'

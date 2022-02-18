@@ -24,6 +24,9 @@ class CreateStereoviewerJpegCommand extends Command
         $this->addOption('focus-size', null, InputOption::VALUE_OPTIONAL, 'Size of the focus helpers on the stereo JPG', 50);
         $this->addOption('frames', null, InputOption::VALUE_NEGATABLE, 'Show frames on the stereo JPG', true);
         $this->addOption('frame-size', null, InputOption::VALUE_OPTIONAL, 'Size of the frames around the stereo-pairs', 100);
+        $this->addOption('text', null, InputOption::VALUE_OPTIONAL, 'Adds text under the right stereo-part');
+        $this->addOption('font-size', null, InputOption::VALUE_OPTIONAL, 'The fontsize for the text', 48);
+        $this->addOption('font', null, InputOption::VALUE_OPTIONAL, 'The font to use (must be in the fonts folder)', 'aAntiCorona.ttf');
         $this->addOption('output', null, InputOption::VALUE_OPTIONAL, 'The output filename');
     }
 
@@ -33,7 +36,7 @@ class CreateStereoviewerJpegCommand extends Command
         $path_parts = pathinfo($filename);
 
         if (!file_exists($filename)) {
-            $output->writeln('File not found');
+            $output->writeln(sprintf('File (%s) not found', $filename));
 
             return Command::FAILURE;
         }
@@ -45,8 +48,8 @@ class CreateStereoviewerJpegCommand extends Command
 
         unset($buffer); // freemem
 
-        if (count($split) !== 2) {
-            $output->writeln('Incorrect number of JPG files in the MPO file');
+        if (2 !== count($split)) {
+            $output->writeln(sprintf('Incorrect number (%d) of JPG files in the MPO file', count($split)));
 
             return Command::FAILURE;
         }
@@ -85,10 +88,38 @@ class CreateStereoviewerJpegCommand extends Command
         imagecopymerge($stereoImage, $images[0], $stereoFrameWidth, $stereoFrameWidth, 0, 0, $leftWidth + $stereoFrameWidth, $leftHeight + $stereoFrameWidth, 100);
         imagecopymerge($stereoImage, $images[1], $leftWidth + (2 * $stereoFrameWidth), $stereoFrameWidth, 0, 0, $rightWidth, $rightHeight, 100);
 
+        // Write text under the right image
+        $text = $input->getOption('text');
+        $font_size = $input->getOption('font-size');
+        $font_ttf = $input->getOption('font');
+
+        if ($text && $font_size && $stereoFrameWidth && $font_ttf) {
+            $font = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . $font_ttf;
+
+            if (!file_exists($font)) {
+                $output->writeln(sprintf('Font (%s) not found', $font_ttf));
+
+                return Command::FAILURE;
+            }
+
+            $image_text = imagecreatetruecolor($rightWidth, $stereoFrameWidth);
+
+            $text_color = imagecolorallocate($image_text, 255, 255, 255);
+
+            $bbox = imagettfbbox($font_size, 0, $font, $text);
+            $x = (int)($bbox[0] + (imagesx($image_text) / 2) - ($bbox[4] / 2) - 25);
+            $y = (int)($bbox[1] + (imagesy($image_text) / 2) - ($bbox[5] / 2) - 5);
+
+            imagettftext($image_text, $font_size, 0, $x, $y, $text_color, $font, $text);
+
+            imagecopymerge($stereoImage, $image_text, $leftWidth + (2 * $stereoFrameWidth), $stereoFrameWidth + $rightHeight, 0, 0, $rightWidth, $stereoFrameWidth, 100);
+            imagedestroy($image_text); // freemem
+        }
+
         unset($images); // freemem
 
         // Save the stereo image
-        $outfile = $input->getOption('output') ?? sprintf('%s/%s-%s.jpg', $path_parts['dirname'], $path_parts['filename'], 'stereo');
+        $outfile = $input->getOption('output') ?? sprintf('%s-%s.jpg', $path_parts['filename'], 'stereo');
         imagejpeg($stereoImage, $outfile, $input->getOption('quality'));
 
         imagedestroy($stereoImage); // freemem

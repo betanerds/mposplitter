@@ -1,6 +1,6 @@
 {
     "name": "betanerds/mposplitter",
-    "description": "Splits an MPO file and writes a stereograph image",
+    "description": "Convert a Fujifilm Finepix Real-3D MPO file to a stereo JPG",
     "type": "library",
     "license": "MIT",
     "autoload": {

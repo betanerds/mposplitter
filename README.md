@@ -36,6 +36,8 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 `--output[=OUTPUT]`          The output filename [default: `<filename>-stereo`.jpg]
 
+# About
+For more information about the background and the other parts of this project, go to www.stereoscope.nl
 
 # Disclaimer
 The font 'A Anti Corona' is a free font by ''Wahyu Eka Prasetya' and downloaded from 'www.1001freefonts.com'

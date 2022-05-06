@@ -30,6 +30,8 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 `--text[=TEXT]`              Adds text under the right stereo-part
 
+`--text-position[=L|R|B]`    Position where to put the text, Left, Right, Both [default:R]
+
 `--font-size[=TEXT]`         The fontsize for the text [default: 48]
 
 `--font[=TEXT]`              The font to use (must be in the fonts folder) [default: "aAntiCorona.ttf"]

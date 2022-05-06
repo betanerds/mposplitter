@@ -25,6 +25,7 @@ class CreateStereoviewerJpegCommand extends Command
         $this->addOption('frames', null, InputOption::VALUE_NEGATABLE, 'Show frames on the stereo JPG', true);
         $this->addOption('frame-size', null, InputOption::VALUE_OPTIONAL, 'Size of the frames around the stereo-pairs', 100);
         $this->addOption('text', null, InputOption::VALUE_OPTIONAL, 'Adds text under the right stereo-part');
+        $this->addOption('text-position', null, InputOption::VALUE_OPTIONAL, 'Position where to put the text', 'R');
         $this->addOption('font-size', null, InputOption::VALUE_OPTIONAL, 'The fontsize for the text', 48);
         $this->addOption('font', null, InputOption::VALUE_OPTIONAL, 'The font to use (must be in the fonts folder)', 'aAntiCorona.ttf');
         $this->addOption('output', null, InputOption::VALUE_OPTIONAL, 'The output filename');
@@ -92,6 +93,7 @@ class CreateStereoviewerJpegCommand extends Command
         $text = $input->getOption('text');
         $font_size = $input->getOption('font-size');
         $font_ttf = $input->getOption('font');
+        $text_position = $input->getOption('text-position');
 
         if ($text && $font_size && $stereoFrameWidth && $font_ttf) {
             $font = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . $font_ttf;
@@ -112,7 +114,13 @@ class CreateStereoviewerJpegCommand extends Command
 
             imagettftext($image_text, $font_size, 0, $x, $y, $text_color, $font, $text);
 
-            imagecopymerge($stereoImage, $image_text, $leftWidth + (2 * $stereoFrameWidth), $stereoFrameWidth + $rightHeight, 0, 0, $rightWidth, $stereoFrameWidth, 100);
+            if ('R' === $text_position || 'B' === $text_position) {
+                imagecopymerge($stereoImage, $image_text, $leftWidth + (2 * $stereoFrameWidth), $stereoFrameWidth + $rightHeight, 0, 0, $rightWidth, $stereoFrameWidth, 100);
+            }
+            if ('L' === $text_position || 'B' === $text_position) {
+                imagecopymerge($stereoImage, $image_text, $stereoFrameWidth, $stereoFrameWidth + $leftHeight, 0, 0, $leftWidth, $stereoFrameWidth, 100);
+            }
+
             imagedestroy($image_text); // freemem
         }
 

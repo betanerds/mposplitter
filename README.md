@@ -34,7 +34,7 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 `--font-size[=TEXT]`         The fontsize for the text [default: 48]
 
-`--font[=TEXT]`              The font to use (must be in the fonts folder) [default: "aAntiCorona.ttf"]
+`--font[=TEXT]`              The font to use (must be in the 'fonts' folder) [default: "aAntiCorona.ttf"]
 
 `--output[=OUTPUT]`          The output filename [default: `<filename>-stereo`.jpg]
 

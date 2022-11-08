@@ -44,7 +44,7 @@ class CreateStereoviewerJpegCommand extends Command
 
         $buffer = file_get_contents($filename);
 
-        $token = chr(0xff) . chr(0xd8) . chr(0xff) . chr(0xe1);
+        $token = pack('CCCC', 0xff , 0xd8, 0xff, 0xe1);
         $split = preg_split("/$token/", $buffer, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
         unset($buffer); // freemem

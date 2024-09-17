@@ -2,25 +2,28 @@
 
 namespace Betanerds\Mposplitter\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'convert',
+    description: 'Convert a Fujifilm Finepix Real 3D MPO file to a stereo JPG',
+)]
 class CreateStereoviewerJpegCommand extends Command
 {
     const LEFT_IMAGE = 0;
     const RIGHT_IMAGE = 1;
-
-    protected static $defaultName = 'convert';
-    protected static $defaultDescription = 'Convert a Fujifilm Finepix Real 3D MPO file to a stereo JPG';
 
     protected function configure(): void
     {
         $this->addArgument('filename', InputArgument::REQUIRED, 'The MPO file to convert');
         $this->addOption('quality', null, InputOption::VALUE_OPTIONAL, 'Quality of the stereo JPG', 100);
         $this->addOption('focus', null, InputOption::VALUE_NEGATABLE, 'Show focus helpers on the stereo JPG', true);
+        $this->addOption('exif', null, InputOption::VALUE_NEGATABLE, 'Preserve Exif data (exiftool needs to be installed)', false);
         $this->addOption('focus-size', null, InputOption::VALUE_OPTIONAL, 'Size of the focus helpers on the stereo JPG', 50);
         $this->addOption('frames', null, InputOption::VALUE_NEGATABLE, 'Show frames on the stereo JPG', true);
         $this->addOption('frame-size', null, InputOption::VALUE_OPTIONAL, 'Size of the frames around the stereo-pairs', 100);
@@ -44,7 +47,7 @@ class CreateStereoviewerJpegCommand extends Command
 
         $buffer = file_get_contents($filename);
 
-        $token = pack('CCCC', 0xff , 0xd8, 0xff, 0xe1);
+        $token = pack('CCCC', 0xff, 0xd8, 0xff, 0xe1);
         $split = preg_split("/$token/", $buffer, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
         unset($buffer); // freemem
@@ -131,6 +134,12 @@ class CreateStereoviewerJpegCommand extends Command
         imagejpeg($stereoImage, $outfile, $input->getOption('quality'));
 
         imagedestroy($stereoImage); // freemem
+
+        if ($input->getOption('exif')) {
+            $command = "exiftool -TagsFromFile $filename $outfile";
+            exec($command);
+            unlink($outfile . '_original');
+        }
 
         $output->writeln(sprintf('Converted stereo JPG: %s', $outfile));
 

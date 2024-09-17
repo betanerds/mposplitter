@@ -22,6 +22,8 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 `--focus|--no-focus`         Show focus helpers on the stereo JPG [default: focus]
 
+`--exif|--no-exif`           Preserve Exif data (exiftool needs to be installed) [default: no-exif]
+
 `--focus-size[=FOCUS-SIZE]`  Size of the focus helpers on the stereo JPG [default: 50]
 
 `--frames|--no-frames`       Show frames on the stereo JPG [default: frames]

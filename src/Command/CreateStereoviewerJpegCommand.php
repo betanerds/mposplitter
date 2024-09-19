@@ -2,6 +2,11 @@
 
 namespace Betanerds\Mposplitter\Command;
 
+use lsolesen\pel\PelException;
+use lsolesen\pel\PelExif;
+use lsolesen\pel\PelInvalidArgumentException;
+use lsolesen\pel\PelInvalidDataException;
+use lsolesen\pel\PelJpeg;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,9 +26,8 @@ class CreateStereoviewerJpegCommand extends Command
     protected function configure(): void
     {
         $this->addArgument('filename', InputArgument::REQUIRED, 'The MPO file to convert');
-        $this->addOption('quality', null, InputOption::VALUE_OPTIONAL, 'Quality of the stereo JPG', 100);
         $this->addOption('focus', null, InputOption::VALUE_NEGATABLE, 'Show focus helpers on the stereo JPG', true);
-        $this->addOption('exif', null, InputOption::VALUE_NEGATABLE, 'Preserve Exif data (exiftool needs to be installed)', false);
+        $this->addOption('exif', null, InputOption::VALUE_NEGATABLE, 'Preserve Exif data', false);
         $this->addOption('focus-size', null, InputOption::VALUE_OPTIONAL, 'Size of the focus helpers on the stereo JPG', 50);
         $this->addOption('frames', null, InputOption::VALUE_NEGATABLE, 'Show frames on the stereo JPG', true);
         $this->addOption('frame-size', null, InputOption::VALUE_OPTIONAL, 'Size of the frames around the stereo-pairs', 100);
@@ -34,6 +38,11 @@ class CreateStereoviewerJpegCommand extends Command
         $this->addOption('output', null, InputOption::VALUE_OPTIONAL, 'The output filename');
     }
 
+    /**
+     * @throws PelInvalidArgumentException
+     * @throws PelInvalidDataException
+     * @throws PelException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $filename = $input->getArgument('filename');
@@ -131,15 +140,27 @@ class CreateStereoviewerJpegCommand extends Command
 
         // Save the stereo image
         $outfile = $input->getOption('output') ?? sprintf('%s-%s.jpg', $path_parts['filename'], 'stereo');
-        imagejpeg($stereoImage, $outfile, $input->getOption('quality'));
-
-        imagedestroy($stereoImage); // freemem
+        $output_jpeg = new PelJpeg($stereoImage);
 
         if ($input->getOption('exif')) {
-            $command = "exiftool -TagsFromFile $filename $outfile";
-            exec($command);
-            unlink($outfile . '_original');
+            $input_jpeg = new PelJpeg($filename);
+            $exif = $input_jpeg->getExif();
+            if ($exif instanceof PelExif) {
+
+                $tiff = $exif->getTiff();
+                $ifId0 = $tiff->getIfd();
+
+                $ifId0->getSubIfd(2)->getEntry(40962)->setValue(imagesx($stereoImage));
+                $ifId0->getSubIfd(2)->getEntry(40963)->setValue(imagesy($stereoImage));
+                $ifId0->getEntry(305)->setValue('BetaNerds - mposplitter v1.0.8');
+
+                $output_jpeg->setExif($exif);
+            }
         }
+
+        $output_jpeg->saveFile($outfile);
+
+        imagedestroy($stereoImage); // freemem
 
         $output->writeln(sprintf('Converted stereo JPG: %s', $outfile));
 

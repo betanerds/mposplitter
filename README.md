@@ -18,11 +18,9 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 ### Options
 
-`--quality[=QUALITY]`        Quality of the stereo JPG [default: 100]
-
 `--focus|--no-focus`         Show focus helpers on the stereo JPG [default: focus]
 
-`--exif|--no-exif`           Preserve Exif data (exiftool needs to be installed) [default: no-exif]
+`--exif|--no-exif`           Preserve Exif data [default: no-exif]
 
 `--focus-size[=FOCUS-SIZE]`  Size of the focus helpers on the stereo JPG [default: 50]
 
@@ -45,3 +43,6 @@ For more information about the background and the other parts of this project, g
 
 # Disclaimer
 The font 'A Anti Corona' is a free font by ''Wahyu Eka Prasetya' and downloaded from 'www.1001freefonts.com'
+
+# Credits
+Exif support by using 'github.com/FileEye/pel'

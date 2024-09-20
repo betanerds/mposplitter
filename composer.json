@@ -1,6 +1,6 @@
 {
     "name": "betanerds/mposplitter",
-    "description": "Convert a Fujifilm Finepix Real-3D MPO file to a stereo JPG",
+    "description": "Convert a Fujifilm Finepix Real 3D MPO file to a stereo SBS (Side By Side) JPG",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -19,7 +19,6 @@
         "php": "^8.0",
         "symfony/console": "^6.0",
         "ext-gd": "*",
-      "ext-exif": "*",
         "fileeye/pel": "^0.10.0"
     },
     "bin": [

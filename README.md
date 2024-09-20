@@ -1,6 +1,6 @@
 # MPOSplitter
 
-Convert a Fujifilm Finepix Real-3D MPO file to a stereo JPG
+Convert a Fujifilm Finepix Real-3D MPO file to a stereo SBS (Side By Side) JPG
 
 ## Install
 

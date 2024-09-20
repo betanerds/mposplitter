@@ -7,6 +7,7 @@ use lsolesen\pel\PelExif;
 use lsolesen\pel\PelInvalidArgumentException;
 use lsolesen\pel\PelInvalidDataException;
 use lsolesen\pel\PelJpeg;
+use lsolesen\pel\PelTag;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'convert',
-    description: 'Convert a Fujifilm Finepix Real 3D MPO file to a stereo JPG',
+    description: 'Convert a Fujifilm Finepix Real 3D MPO file to a stereo SBS (Side By Side) JPG',
 )]
 class CreateStereoviewerJpegCommand extends Command
 {
@@ -31,7 +32,7 @@ class CreateStereoviewerJpegCommand extends Command
         $this->addOption('focus-size', null, InputOption::VALUE_OPTIONAL, 'Size of the focus helpers on the stereo JPG', 50);
         $this->addOption('frames', null, InputOption::VALUE_NEGATABLE, 'Show frames on the stereo JPG', true);
         $this->addOption('frame-size', null, InputOption::VALUE_OPTIONAL, 'Size of the frames around the stereo-pairs', 100);
-        $this->addOption('text', null, InputOption::VALUE_OPTIONAL, 'Adds text under the right stereo-part');
+        $this->addOption('text', null, InputOption::VALUE_OPTIONAL, 'Adds text under the stereo JPG');
         $this->addOption('text-position', null, InputOption::VALUE_OPTIONAL, 'Position where to put the text', 'R');
         $this->addOption('font-size', null, InputOption::VALUE_OPTIONAL, 'The fontsize for the text', 48);
         $this->addOption('font', null, InputOption::VALUE_OPTIONAL, 'The font to use (must be in the fonts folder)', 'aAntiCorona.ttf');
@@ -155,11 +156,11 @@ class CreateStereoviewerJpegCommand extends Command
                 $ifId0 = $tiff->getIfd();
 
                 // Fix widht / heigth
-                $ifId0->getSubIfd(2)->getEntry(40962)->setValue($width);
-                $ifId0->getSubIfd(2)->getEntry(40963)->setValue($height);
+                $ifId0->getSubIfd(2)->getEntry(PelTag::PIXEL_X_DIMENSION)->setValue($width);
+                $ifId0->getSubIfd(2)->getEntry(PelTag::PIXEL_Y_DIMENSION)->setValue($height);
 
                 // Replace 'Software' tag
-                $ifId0->getEntry(305)->setValue('BetaNerds - mposplitter v1.0');
+                $ifId0->getEntry(PelTag::SOFTWARE)->setValue('BetaNerds - mposplitter v1.0');
 
                 $output_jpeg->setExif($exif);
             }

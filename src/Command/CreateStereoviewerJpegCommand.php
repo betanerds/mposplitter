@@ -138,9 +138,13 @@ class CreateStereoviewerJpegCommand extends Command
 
         unset($images); // freemem
 
-        // Save the stereo image
-        $outfile = $input->getOption('output') ?? sprintf('%s-%s.jpg', $path_parts['filename'], 'stereo');
+        // Preserve exif information
         $output_jpeg = new PelJpeg($stereoImage);
+
+        $width = imagesx($stereoImage);
+        $height = imagesy($stereoImage);
+
+        imagedestroy($stereoImage); // freemem
 
         if ($input->getOption('exif')) {
             $input_jpeg = new PelJpeg($filename);
@@ -150,17 +154,20 @@ class CreateStereoviewerJpegCommand extends Command
                 $tiff = $exif->getTiff();
                 $ifId0 = $tiff->getIfd();
 
-                $ifId0->getSubIfd(2)->getEntry(40962)->setValue(imagesx($stereoImage));
-                $ifId0->getSubIfd(2)->getEntry(40963)->setValue(imagesy($stereoImage));
-                $ifId0->getEntry(305)->setValue('BetaNerds - mposplitter v1.0.8');
+                // Fix widht / heigth
+                $ifId0->getSubIfd(2)->getEntry(40962)->setValue($width);
+                $ifId0->getSubIfd(2)->getEntry(40963)->setValue($height);
+
+                // Replace 'Software' tag
+                $ifId0->getEntry(305)->setValue('BetaNerds - mposplitter v1.0');
 
                 $output_jpeg->setExif($exif);
             }
         }
 
+        // Save the stereo image
+        $outfile = $input->getOption('output') ?? sprintf('%s-%s.jpg', $path_parts['filename'], 'stereo');
         $output_jpeg->saveFile($outfile);
-
-        imagedestroy($stereoImage); // freemem
 
         $output->writeln(sprintf('Converted stereo JPG: %s', $outfile));
 

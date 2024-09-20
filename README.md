@@ -20,7 +20,7 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 `--focus|--no-focus`         Show focus helpers on the stereo JPG [default: focus]
 
-`--exif|--no-exif`           Preserve Exif data [default: no-exif]
+`--exif|--no-exif`           Preserve Exif data from MPO file [default: no-exif]
 
 `--focus-size[=FOCUS-SIZE]`  Size of the focus helpers on the stereo JPG [default: 50]
 
@@ -28,7 +28,7 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 `--frame-size[=FRAME-SIZE]`  Size of the frames around the stereo-pairs [default: 100]
 
-`--text[=TEXT]`              Adds text under the right stereo-part
+`--text[=TEXT]`              Adds text under the stereo JPG
 
 `--text-position[=L|R|B]`    Position where to put the text, Left, Right, Both [default:R]
 
@@ -42,7 +42,7 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 For more information about the background and the other parts of this project, go to www.stereoscope.nl
 
 # Disclaimer
-The font 'A Anti Corona' is a free font by ''Wahyu Eka Prasetya' and downloaded from 'www.1001freefonts.com'
+The font 'A Anti Corona' is a free font by 'Wahyu Eka Prasetya' and downloaded from www.1001freefonts.com
 
 # Credits
-Exif support by using 'github.com/FileEye/pel'
+Exif support by using package 'fileeye/pel'

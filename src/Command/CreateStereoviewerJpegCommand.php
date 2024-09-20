@@ -142,8 +142,8 @@ class CreateStereoviewerJpegCommand extends Command
         // Preserve exif information
         $output_jpeg = new PelJpeg($stereoImage);
 
-        $width = imagesx($stereoImage);
-        $height = imagesy($stereoImage);
+        $pixelXDimension = imagesx($stereoImage);
+        $pixelYDimension = imagesy($stereoImage);
 
         imagedestroy($stereoImage); // freemem
 
@@ -156,8 +156,8 @@ class CreateStereoviewerJpegCommand extends Command
                 $ifId0 = $tiff->getIfd();
 
                 // Fix widht / heigth
-                $ifId0->getSubIfd(2)->getEntry(PelTag::PIXEL_X_DIMENSION)->setValue($width);
-                $ifId0->getSubIfd(2)->getEntry(PelTag::PIXEL_Y_DIMENSION)->setValue($height);
+                $ifId0->getSubIfd(PelTag::INTEROPERABILITY_VERSION)->getEntry(PelTag::PIXEL_X_DIMENSION)->setValue($pixelXDimension);
+                $ifId0->getSubIfd(PelTag::INTEROPERABILITY_VERSION)->getEntry(PelTag::PIXEL_Y_DIMENSION)->setValue($pixelYDimension);
 
                 // Replace 'Software' tag
                 $ifId0->getEntry(PelTag::SOFTWARE)->setValue('BetaNerds - mposplitter v1.0');

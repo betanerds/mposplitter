@@ -73,6 +73,7 @@ class CreateStereoviewerJpegCommand extends Command
             $images[] = imagecreatefromstring($token . $value);
         }
 
+        unset($value); // freemem
         unset($split); // freemem
 
         $leftWidth = imageSX($images[self::LEFT_IMAGE]);

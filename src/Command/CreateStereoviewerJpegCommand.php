@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Betanerds\Mposplitter\Command;
 
 use lsolesen\pel\PelException;
@@ -27,15 +29,17 @@ class CreateStereoviewerJpegCommand extends Command
     protected function configure(): void
     {
         $this->addArgument('filename', InputArgument::REQUIRED, 'The MPO file to convert');
-        $this->addOption('focus', null, InputOption::VALUE_NEGATABLE, 'Show focus helpers on the stereo JPG', true);
-        $this->addOption('exif', null, InputOption::VALUE_NEGATABLE, 'Preserve Exif data', false);
+        $this->addOption('no-focus', null, InputOption::VALUE_NONE, 'Do not show focus helpers on the stereo JPG');
+        $this->addOption('no-exif', null, InputOption::VALUE_NONE, 'Do not preserve Exif data');
+        $this->addOption('cross', null, InputOption::VALUE_NONE, 'Use cross-eyed view (swap left and right)');
         $this->addOption('focus-size', null, InputOption::VALUE_OPTIONAL, 'Size of the focus helpers on the stereo JPG', 50);
-        $this->addOption('frames', null, InputOption::VALUE_NEGATABLE, 'Show frames on the stereo JPG', true);
+        $this->addOption('no-frames', null, InputOption::VALUE_NONE, 'Do not show frames on the stereo JPG');
         $this->addOption('frame-size', null, InputOption::VALUE_OPTIONAL, 'Size of the frames around the stereo-pairs', 100);
         $this->addOption('text', null, InputOption::VALUE_OPTIONAL, 'Adds text under the stereo JPG');
         $this->addOption('text-position', null, InputOption::VALUE_OPTIONAL, 'Position where to put the text', 'R');
         $this->addOption('font-size', null, InputOption::VALUE_OPTIONAL, 'The fontsize for the text', 48);
         $this->addOption('font', null, InputOption::VALUE_OPTIONAL, 'The font to use (must be in the fonts folder)', 'aAntiCorona.ttf');
+        $this->addOption('resize', null, InputOption::VALUE_OPTIONAL, 'Resize the images percentage', 100);
         $this->addOption('output', null, InputOption::VALUE_OPTIONAL, 'The output filename');
     }
 
@@ -76,6 +80,18 @@ class CreateStereoviewerJpegCommand extends Command
         unset($value); // freemem
         unset($split); // freemem
 
+        if ($input->getOption('cross')) {
+            $images = array_reverse($images);
+        }
+
+        $resizePct = 1;
+        if (is_numeric($input->getOption('resize')) && $input->getOption('resize') < 100 && $input->getOption('resize') > 0) {
+            $resizePct = $input->getOption('resize') / 100;
+        }
+
+        $images[self::LEFT_IMAGE] = imagescale($images[self::LEFT_IMAGE], (int)(imageSX($images[self::LEFT_IMAGE]) * $resizePct));
+        $images[self::RIGHT_IMAGE] = imagescale($images[self::RIGHT_IMAGE], (int)(imageSX($images[self::RIGHT_IMAGE]) * $resizePct));
+
         $leftWidth = imageSX($images[self::LEFT_IMAGE]);
         $leftHeight = imageSY($images[self::LEFT_IMAGE]);
 
@@ -83,18 +99,18 @@ class CreateStereoviewerJpegCommand extends Command
         $rightHeight = imageSY($images[self::RIGHT_IMAGE]);
 
         // Create the stereo canvas
-        $stereoFrameWidth = $input->getOption('frames') ? $input->getOption('frame-size') : 0;
+        $stereoFrameWidth = !$input->getOption('no-frames') ? (int)($input->getOption('frame-size') * $resizePct) : 0;
         $stereoImage = imagecreatetruecolor($leftWidth + $rightWidth + (3 * $stereoFrameWidth), $leftHeight + (2 * $stereoFrameWidth));
 
         // Create the focusing helpers
-        $arcWidth = $input->getOption('focus-size');
-        if ($input->getOption('focus') && $stereoFrameWidth >= $arcWidth) {
+        $arcWidth = (int)($input->getOption('focus-size') * $resizePct);
+        if (!$input->getOption('no-focus') && $stereoFrameWidth >= $arcWidth) {
             $arc = imagecreatetruecolor($arcWidth, $arcWidth);
             $col_ellipse = imagecolorallocate($arc, 255, 255, 255);
-            imagefilledellipse($arc, $arcWidth / 2, $arcWidth / 2, $arcWidth, $arcWidth, $col_ellipse);
+            imagefilledellipse($arc, (int)($arcWidth / 2), (int)($arcWidth / 2), $arcWidth, $arcWidth, $col_ellipse);
 
-            imagecopymerge($stereoImage, $arc, $stereoFrameWidth + ($leftWidth / 2) - ($arcWidth / 2), ($arcWidth / 2), 0, 0, $arcWidth, $arcWidth, 100);
-            imagecopymerge($stereoImage, $arc, $stereoFrameWidth + $leftWidth + $stereoFrameWidth + ($rightWidth / 2) - ($arcWidth / 2), ($arcWidth / 2), 0, 0, $arcWidth, $arcWidth, 100);
+            imagecopymerge($stereoImage, $arc, (int)($stereoFrameWidth + ($leftWidth / 2) - ($arcWidth / 2)), (int)($arcWidth / 2), 0, 0, $arcWidth, $arcWidth, 100);
+            imagecopymerge($stereoImage, $arc, (int)($stereoFrameWidth + $leftWidth + $stereoFrameWidth + ($rightWidth / 2) - ($arcWidth / 2)), (int)($arcWidth / 2), 0, 0, $arcWidth, $arcWidth, 100);
 
             imagedestroy($arc); // freemem
         }
@@ -105,7 +121,7 @@ class CreateStereoviewerJpegCommand extends Command
 
         // Write text under the right image
         $text = $input->getOption('text');
-        $font_size = $input->getOption('font-size');
+        $font_size = (int)($input->getOption('font-size') * $resizePct);
         $font_ttf = $input->getOption('font');
         $text_position = $input->getOption('text-position');
 
@@ -119,7 +135,6 @@ class CreateStereoviewerJpegCommand extends Command
             }
 
             $image_text = imagecreatetruecolor($rightWidth, $stereoFrameWidth);
-
             $text_color = imagecolorallocate($image_text, 255, 255, 255);
 
             $bbox = imagettfbbox($font_size, 0, $font, $text);
@@ -131,6 +146,7 @@ class CreateStereoviewerJpegCommand extends Command
             if ('R' === $text_position || 'B' === $text_position) {
                 imagecopymerge($stereoImage, $image_text, $leftWidth + (2 * $stereoFrameWidth), $stereoFrameWidth + $rightHeight, 0, 0, $rightWidth, $stereoFrameWidth, 100);
             }
+
             if ('L' === $text_position || 'B' === $text_position) {
                 imagecopymerge($stereoImage, $image_text, $stereoFrameWidth, $stereoFrameWidth + $leftHeight, 0, 0, $leftWidth, $stereoFrameWidth, 100);
             }
@@ -148,7 +164,7 @@ class CreateStereoviewerJpegCommand extends Command
 
         imagedestroy($stereoImage); // freemem
 
-        if ($input->getOption('exif')) {
+        if (!$input->getOption('no-exif')) {
             $input_jpeg = new PelJpeg($filename);
             $exif = $input_jpeg->getExif();
             if ($exif instanceof PelExif) {

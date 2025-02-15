@@ -18,25 +18,29 @@ Make sure the `~/.composer/vendor/bin` is in your `PATH`
 
 ### Options
 
-`--focus|--no-focus`         Show focus helpers on the stereo JPG [default: focus]
+`--no-focus`                Do not show focus helpers on the stereo JPG
 
-`--exif|--no-exif`           Preserve Exif data from MPO file [default: no-exif]
+`--no-exif`                 Do not preserve Exif data
 
-`--focus-size[=FOCUS-SIZE]`  Size of the focus helpers on the stereo JPG [default: 50]
+`--cross`                   Use cross-eyed view (swap left and right)
 
-`--frames|--no-frames`       Show frames on the stereo JPG [default: frames]
+`--focus-size[=FOCUS-SIZE]` Size of the focus helpers on the stereo JPG [default: 50]
 
-`--frame-size[=FRAME-SIZE]`  Size of the frames around the stereo-pairs [default: 100]
+`--no-frames`               Do not show frames on the stereo JPG
 
-`--text[=TEXT]`              Adds text under the stereo JPG
+`--frame-size[=FRAME-SIZE]` Size of the frames around the stereo-pairs [default: 100]
 
-`--text-position[=L|R|B]`    Position where to put the text, Left, Right, Both [default:R]
+`--text[=TEXT]`             Adds text under the stereo JPG
 
-`--font-size[=TEXT]`         The fontsize for the text [default: 48]
+`--text-position[=L|R|B]`   Position where to put the text, [L] Left, [R] Right, [B] Both [default:R]
 
-`--font[=TEXT]`              The font to use (must be in the 'fonts' folder) [default: "aAntiCorona.ttf"]
+`--font-size[=TEXT]`        The fontsize for the text [default: 48]
 
-`--output[=OUTPUT]`          The output filename [default: `<filename>-stereo`.jpg]
+`--font[=TEXT]`             The font to use (must be in the 'fonts' folder) [default: "aAntiCorona.ttf"]
+
+`--resize`                  Resize the images percentage [default: 100]
+
+`--output[=OUTPUT]`         The output filename [default: `<filename>-stereo`.jpg]
 
 # About
 For more information about the background and the other parts of this project, go to www.stereoscope.nl
